@@ -5,3 +5,5 @@ export interface Todo {
     title: string,
     description: string,
 }
+
+export type FunctionTodo = (id: Todo['id']) => void;
