@@ -22,7 +22,8 @@ function Form({onSubmit}: Props) {
         onSubmit({
             id: Date.now() + Math.random(),
             title,
-            description
+            description,
+            isComplete: false
         })
 
         setTitle('');
