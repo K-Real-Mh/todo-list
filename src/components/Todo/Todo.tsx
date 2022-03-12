@@ -6,7 +6,6 @@ import {Input} from '../index';
 import {AiOutlineCheck, AiOutlineClose, AiOutlineDelete} from "react-icons/all";
 
 interface Props extends TodoType {
-    isComplete: boolean,
     completeTodo: FunctionTodo;
     removeTodo: FunctionTodo;
     updateTodo: (id: TodoType['id'], title: TodoType['title'], description: TodoType['description']) => void;
