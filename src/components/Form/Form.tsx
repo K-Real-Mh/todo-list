@@ -1,15 +1,16 @@
-import React, {useContext, useState} from 'react';
+import React, {memo, useState} from 'react';
 import {Input} from '../index';
-import {store} from '../../contexts/Todos/store';
 import {ActionKind} from '../../contexts/Todos/types';
 import s from './Form.module.css';
+import {ComponentDispatch} from "../../types";
 
-function Form() {
+interface Props {
+    dispatch: ComponentDispatch;
+}
+
+function Form({dispatch}: Props) {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
-
-    const globalState = useContext(store);
-    const { dispatch } = globalState;
 
     const handleSubmit = (event: React.FormEvent): void => {
         event.preventDefault();
@@ -56,4 +57,4 @@ function Form() {
     );
 }
 
-export default Form;
+export default memo(Form);

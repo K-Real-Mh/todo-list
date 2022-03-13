@@ -1,24 +1,35 @@
-import React, {useContext} from 'react';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {DragDropContext, Draggable, Droppable, DropResult} from 'react-beautiful-dnd';
 import {Form, Todo} from '../index';
 import {store} from '../../contexts/Todos/store';
-import {ActionKind} from '../../contexts/Todos/types';
+import {Action, ActionKind} from '../../contexts/Todos/types';
 import s from './TodoList.module.css';
 
 function TodoList() {
+    const [state, setState] = useState<Action>();
     const globalState = useContext(store);
-    const {value: todos, dispatch} = globalState;
+    const {value: todos, dispatch: globalDispatch} = globalState;
+
+    const dispatch = useCallback((action: Action) => {
+        setState(action);
+    }, [])
+
+    useEffect(() => {
+        if (state && globalDispatch) {
+            globalDispatch(state);
+        }
+    }, [globalDispatch, state])
 
     const handleOnDragEnd = (result: DropResult): void => {
-        if (dispatch) {
-            dispatch({type: ActionKind.DragTodo, payload: result});
+        if (globalDispatch) {
+            globalDispatch({type: ActionKind.DragTodo, payload: result});
         }
     }
 
     return (
         <>
             <h1 className={s.title}>Tell me about your plans</h1>
-            <Form/>
+            <Form dispatch={dispatch}/>
             <DragDropContext onDragEnd={handleOnDragEnd}>
                 <Droppable droppableId="todos">
                     {(provided) => (
@@ -36,6 +47,7 @@ function TodoList() {
                                                 title={todo.title}
                                                 isComplete={todo.isComplete}
                                                 description={todo.description}
+                                                dispatch={dispatch}
                                             />
                                         </li>
                                     )}

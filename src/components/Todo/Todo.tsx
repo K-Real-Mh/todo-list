@@ -1,43 +1,48 @@
-import React, {useCallback, useContext, useState} from 'react';
+import React, {memo, useCallback, useEffect, useState} from 'react';
 import {Input} from '../index';
 import {AiOutlineCheck, AiOutlineClose, AiOutlineDelete} from 'react-icons/ai';
-import {Todo as TodoType} from '../../types';
-import {store} from '../../contexts/Todos/store';
+import {ComponentDispatch, Todo as TodoType} from '../../types';
 import {ActionKind} from '../../contexts/Todos/types';
 import cn from 'classnames/bind';
 import s from './Todo.module.css';
+
+interface Props extends TodoType {
+    dispatch: ComponentDispatch;
+}
 
 function Todo({
     id,
     title: todoTitle,
     description: todoDescription,
-    isComplete
-}: TodoType) {
+    isComplete,
+    dispatch
+}: Props) {
     const [title, setTitle] = useState(todoTitle);
     const [description, setDescription] = useState(todoDescription);
+    const [isNeedUpdate, setIsNeedUpdate] = useState(false);
 
-    const globalState = useContext(store);
-    const { dispatch } = globalState;
+    useEffect(() => {
+        if (isNeedUpdate) {
+            if (title !== todoTitle || description !== todoDescription) {
+                if (!title || /^\s*$/.test(title)) {
+                    setTitle(todoTitle);
+                } else {
+                    dispatch({
+                        type: ActionKind.UpdateTodo, payload: {
+                            todoId: id,
+                            newTitle: title,
+                            newDescription: description
+                        }
+                    });
+                }
+            }
+            setIsNeedUpdate(false);
+        }
+    }, [description, dispatch, id, isNeedUpdate, title, todoDescription, todoTitle])
 
     const handleUpdateTodo = useCallback(() => {
-        if (
-            dispatch
-            && (
-                title
-                || !/^\s*$/.test(title)
-                || title !== todoTitle
-                || description !== todoDescription
-            )
-        ) {
-            dispatch({
-                type: ActionKind.UpdateTodo, payload: {
-                    todoId: id,
-                    newTitle: title,
-                    newDescription: description
-                }
-            });
-        }
-    }, [dispatch, title, todoTitle, description, todoDescription, id])
+        setIsNeedUpdate(true);
+    }, [])
 
     const handleCompleteTodo = () => {
         if (dispatch) {
@@ -81,4 +86,4 @@ function Todo({
     );
 }
 
-export default Todo;
+export default memo(Todo);

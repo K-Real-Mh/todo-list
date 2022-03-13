@@ -1,4 +1,4 @@
-import React, {useEffect, useRef} from 'react';
+import React, {memo, useEffect, useRef} from 'react';
 import cn from 'classnames/bind';
 import {InputType} from "../../types";
 import s from './Input.module.css';
@@ -39,4 +39,4 @@ function Input({type, value, onChange, onBlur, autoFocus, placeholder, name}: Pr
     );
 }
 
-export default Input;
+export default memo(Input);

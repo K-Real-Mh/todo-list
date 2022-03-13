@@ -1,3 +1,5 @@
+import {Action} from "./contexts/Todos/types";
+
 export type InputType = 'form' | 'todo';
 
 export interface Todo {
@@ -8,3 +10,5 @@ export interface Todo {
 }
 
 export type TodoList = Todo[];
+
+export type ComponentDispatch = (action: Action) => void;
