@@ -1,16 +1,15 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {Input} from '../index';
-import {Todo} from '../../types';
+import {store} from '../../contexts/Todos/store';
+import {ActionKind} from '../../contexts/Todos/types';
 import s from './Form.module.css';
 
-
-interface Props {
-    onSubmit: (todo: Todo) => void;
-}
-
-function Form({onSubmit}: Props) {
+function Form() {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
+
+    const globalState = useContext(store);
+    const { dispatch } = globalState;
 
     const handleSubmit = (event: React.FormEvent): void => {
         event.preventDefault();
@@ -19,15 +18,18 @@ function Form({onSubmit}: Props) {
             return;
         }
 
-        onSubmit({
-            id: Date.now() + Math.random(),
-            title,
-            description,
-            isComplete: false
-        })
+        if (dispatch) {
+            dispatch({type: ActionKind.CreateTodo, payload: {
+                    id: Date.now() + Math.random(),
+                    title,
+                    description,
+                    isComplete: false
+                }
+            });
 
-        setTitle('');
-        setDescription('');
+            setTitle('');
+            setDescription('');
+        }
     }
 
     return (

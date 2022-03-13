@@ -1,33 +1,55 @@
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useContext, useState} from 'react';
 import {Input} from '../index';
-import {AiOutlineCheck, AiOutlineClose, AiOutlineDelete} from "react-icons/ai";
-import {FunctionTodo, Todo as TodoType, UpdateTodo} from '../../types';
+import {AiOutlineCheck, AiOutlineClose, AiOutlineDelete} from 'react-icons/ai';
+import {Todo as TodoType} from '../../types';
+import {store} from '../../contexts/Todos/store';
+import {ActionKind} from '../../contexts/Todos/types';
 import cn from 'classnames/bind';
 import s from './Todo.module.css';
-
-interface Props extends TodoType {
-    completeTodo: FunctionTodo;
-    removeTodo: FunctionTodo;
-    updateTodo: UpdateTodo;
-}
 
 function Todo({
     id,
     title: todoTitle,
     description: todoDescription,
-    isComplete,
-    completeTodo,
-    removeTodo,
-    updateTodo
-}: Props) {
+    isComplete
+}: TodoType) {
     const [title, setTitle] = useState(todoTitle);
     const [description, setDescription] = useState(todoDescription);
 
+    const globalState = useContext(store);
+    const { dispatch } = globalState;
+
     const handleUpdateTodo = useCallback(() => {
-        if (title !== todoTitle || description !== todoDescription) {
-            updateTodo(id, title, description);
+        if (
+            dispatch
+            && (
+                title
+                || !/^\s*$/.test(title)
+                || title !== todoTitle
+                || description !== todoDescription
+            )
+        ) {
+            dispatch({
+                type: ActionKind.UpdateTodo, payload: {
+                    todoId: id,
+                    newTitle: title,
+                    newDescription: description
+                }
+            });
         }
-    }, [title, todoTitle, description, todoDescription, updateTodo, id])
+    }, [dispatch, title, todoTitle, description, todoDescription, id])
+
+    const handleCompleteTodo = () => {
+        if (dispatch) {
+            dispatch({type: ActionKind.CompleteTodo, payload: id})
+        }
+    }
+
+    const handleRemoveTodo = () => {
+        if (dispatch) {
+            dispatch({type: ActionKind.RemoveTodo, payload: id})
+        }
+    }
 
     return (
         <div className={cn(s.todo, {[s.complete]: isComplete})}>
@@ -49,11 +71,11 @@ function Todo({
             </div>
             <div className={s.icons}>
                 {isComplete ? (
-                    <AiOutlineClose className={s.completeIcon} onClick={() => completeTodo(id)} />
+                    <AiOutlineClose className={s.completeIcon} onClick={handleCompleteTodo} />
                 ) : (
-                    <AiOutlineCheck className={s.completeIcon} onClick={() => completeTodo(id)} />
+                    <AiOutlineCheck className={s.completeIcon} onClick={handleCompleteTodo} />
                 )}
-                <AiOutlineDelete className={s.deleteIcon} onClick={() => removeTodo(id)} />
+                <AiOutlineDelete className={s.deleteIcon} onClick={handleRemoveTodo} />
             </div>
         </div>
     );
