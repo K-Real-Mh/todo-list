@@ -7,4 +7,8 @@ export interface Todo {
     isComplete: boolean,
 }
 
+export type TodoList = Todo[];
+
+export type UpdateTodo = (id: Todo['id'], title: Todo['title'], description: Todo['description']) => void;
+
 export type FunctionTodo = (id: Todo['id']) => void;
