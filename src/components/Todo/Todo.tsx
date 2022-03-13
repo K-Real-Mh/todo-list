@@ -30,7 +30,7 @@ function Todo({
     }, [title, todoTitle, description, todoDescription, updateTodo, id])
 
     return (
-        <li className={cn(s.todo, {[s.complete]: isComplete})}>
+        <div className={cn(s.todo, {[s.complete]: isComplete})}>
             <div className={s.value}>
                 <Input
                     type="todo"
@@ -55,7 +55,7 @@ function Todo({
                 )}
                 <AiOutlineDelete className={s.deleteIcon} onClick={() => removeTodo(id)} />
             </div>
-        </li>
+        </div>
     );
 }
 
